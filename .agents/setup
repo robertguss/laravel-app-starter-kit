@@ -61,6 +61,14 @@ install_composer() {
 }
 
 prepare_postgres() {
+    local application_database
+    application_database="$(sed -n 's/^DB_DATABASE=//p' .env | tail -n 1)"
+
+    if [[ ! "${application_database}" =~ ^[a-z][a-z0-9_]{0,62}$ ]]; then
+        echo "DB_DATABASE must be a lowercase PostgreSQL identifier." >&2
+        exit 1
+    fi
+
     if ! pg_lsclusters --no-header | awk '$1 == "18" && $2 == "main" { found = 1 } END { exit ! found }'; then
         sudo pg_createcluster 18 main --start-conf=manual
     fi
@@ -84,13 +92,15 @@ BEGIN
     END IF;
 END
 $$;
-SELECT 'CREATE DATABASE laravel_app_starter_kit OWNER laravel'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'laravel_app_starter_kit')\gexec
-SELECT 'CREATE DATABASE laravel_app_starter_kit_test OWNER laravel'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'laravel_app_starter_kit_test')\gexec
-SELECT 'CREATE DATABASE laravel_app_starter_kit_browser OWNER laravel'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'laravel_app_starter_kit_browser')\gexec
 SQL
+
+    local database
+    for database in "${application_database}" laravel_app_starter_kit_test laravel_app_starter_kit_browser; do
+        if ! sudo -u postgres psql --tuples-only --no-align \
+            --command="SELECT 1 FROM pg_database WHERE datname = '${database}'" | grep -qx 1; then
+            sudo -u postgres createdb --owner=laravel "${database}"
+        fi
+    done
 }
 
 install_system_packages
