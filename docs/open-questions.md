@@ -14,7 +14,9 @@ answered by adding speculative starter code.
 - Official source: Laravel 13's React/Fortify starter, standard authentication,
   PHPUnit, npm, and PostgreSQL installer choices.
 - Starter consumption: Laravel installer's `--using` Git URL path was exercised;
-  Packagist publication remains deliberately absent.
+  the private repository currently needs Tiged's documented Git mode, while a
+  public repository would use the plain URL. Packagist publication remains
+  deliberately absent.
 - Boost: development-only Amp MCP, guidelines, and six generated skill groups
   are committed.
 - Production: pinned Server Side Up 8.3 FPM/Nginx v4.5.1; the derived image

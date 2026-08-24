@@ -62,5 +62,6 @@ See the [documentation index](docs/README.md),
 
 ## License
 
-No license has been selected. Keep the repository private until Robert
-explicitly decides whether it should be published.
+No public license has been selected. Composer marks the private project as
+`proprietary`; keep the repository private until Robert explicitly decides
+whether and how it should be published.

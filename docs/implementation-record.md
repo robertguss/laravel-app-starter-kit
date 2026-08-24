@@ -52,6 +52,26 @@ README content, `.git`, installed dependencies, and build/cache output. The
 original 20 documentation files were retained. This avoided deleting design
 history or hand-recreating upstream code.
 
+Phase 6 certified the pushed application snapshot
+[`6911bf6b303368944e604ec98d11aafc29095b3b`](https://github.com/robertguss/laravel-app-starter-kit/commit/6911bf6b303368944e604ec98d11aafc29095b3b)
+as an independent app with:
+
+```bash
+/home/user/.config/composer/vendor/bin/laravel new \
+  laravel-starter-phase6-proof \
+  --using='https://github.com/robertguss/laravel-app-starter-kit --mode=git' \
+  --phpunit --npm --database=pgsql --no-boost --no-interaction
+```
+
+The repository is private. Laravel Installer 5.31.1 delegates URL starters to
+Tiged but does not expose Tiged's private-repository mode; the documented
+[`--mode=git` option](https://github.com/tiged/tiged#private-repositories) was
+therefore included in the `--using` value so Tiged used the orb's existing
+authenticated SSH access. No credential was embedded or printed. A public
+release uses the ordinary URL without that mode option. The generated app had no
+inherited `.git` directory and its PostgreSQL database was correctly renamed to
+`laravel_starter_phase6_proof` by Laravel Installer.
+
 Laravel Chisel's generated feature-selection hook removed installer-only files
 after the selected features were applied. Boost was then installed separately
 through its official workflow so its exact development-only output could be
@@ -203,30 +223,44 @@ is an upstream-compatibility upgrade, not a release-certification special case.
    auth, custom auth model, grants, invitations, owners, RBAC, teams, Socialite,
    Redis/Horizon, Octane/FrankenPHP, Reverb, deployment SDK, or product-domain
    code was added.
+9. The checked-in database example keeps Laravel's conventional `laravel`
+   placeholder so the custom-starter installer can rename it for each generated
+   app. Amp setup validates and creates that generated database name instead of
+   assuming the source repository's name.
+10. Current Laravel Installer supports public Git URL starters directly. While
+    this repository remains private, its Tiged adapter requires the documented
+    Git mode adjustment shown above. No package was published and repository
+    visibility was not changed.
 
 ## Verification evidence
 
 The decisive release run uses locked installs and a fresh PostgreSQL database:
 
-| Check                                                          | Result                                                                            |
-| -------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `composer install` / `npm ci` from an independent starter copy | Passed                                                                            |
-| PostgreSQL 18.6 `migrate:fresh` and separate restore database  | Passed; 5 migrations                                                              |
-| `php artisan test`                                             | Passed, including generated auth/settings/security and operational tests          |
-| Pint / Larastan                                                | Passed with no baseline or ignored errors                                         |
-| ESLint / Prettier / TypeScript                                 | Passed                                                                            |
-| `npm run build`                                                | Passed; 2,311 modules transformed                                                 |
-| Composer audit / npm audit                                     | No advisories or vulnerabilities                                                  |
-| Playwright Chromium                                            | 3 journeys passed: auth/logout, mobile shell, 404                                 |
-| Application and `/up`                                          | Laravel 13 booted; framework `Application up` response returned 200               |
-| OCI image                                                      | Built; non-root/writable paths, OPcache, extensions, no Node/npm/dev dependencies |
-| Compose topology                                               | PostgreSQL, web, worker, scheduler healthy; release migration passed              |
-| Backup/restore                                                 | Custom-format dump checksum and isolated restore drill passed                     |
-| Signals                                                        | web, worker, and scheduler terminate/restart cleanly within grace period          |
+| Check                                                      | Result                                                                        |
+| ---------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Laravel `--using` independent app generation               | Passed from source commit `6911bf6`; PHPUnit/npm/PostgreSQL choices           |
+| `.agents/setup` / `.agents/resume` from empty dependencies | Passed; locked installs, generated database, assets, browser, services        |
+| PostgreSQL 18.6 fresh app and separate restore database    | Passed; 5 migrations and isolated Compose restore drill                       |
+| `php artisan test`                                         | 42 passed, 149 assertions, including auth/settings/security/operations        |
+| Pint / Larastan                                            | Passed with no baseline or ignored errors                                     |
+| ESLint / Prettier / TypeScript                             | Passed                                                                        |
+| `npm run build`                                            | Passed; 2,311 modules transformed                                             |
+| strict Composer validation                                 | Valid                                                                         |
+| Composer audit / npm audit                                 | No advisories or vulnerabilities                                              |
+| Playwright Chromium                                        | 3 journeys passed: auth/logout, mobile shell, 404                             |
+| Application and `/up`                                      | Laravel 13 booted; framework `Application up` response returned 200           |
+| Independent OCI image                                      | Built; `www-data`, writable paths, OPcache, PDO PostgreSQL, no Node/npm/Boost |
+| Compose topology                                           | PostgreSQL, web, worker, scheduler healthy; release migration passed          |
+| Backup/restore                                             | Custom-format dump checksum and isolated restore drill passed                 |
+| Signals                                                    | web, worker, and scheduler terminate/restart cleanly within grace period      |
 
-Exact test counts, clean-starter commit, and aggregate output are recorded in
-the Phase 6 certification commit after the first pushed Git snapshot became
-available to the installer.
+For the independent proof, dependency directories, generated assets, `.env`, and
+all three disposable databases were removed after installer generation. Setup
+restored them from the committed locks and example, migrated the absent
+application database, and started `/up`. The aggregate check then regenerated
+Wayfinder output before type checking and passed from that clean app. The
+independent image retained the Server Side Up entrypoint, became healthy,
+returned 200 from `/up`, and exited 0 three seconds after `SIGTERM`.
 
 ## Validation boundary
 
