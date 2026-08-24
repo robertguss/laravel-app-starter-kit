@@ -1,6 +1,6 @@
 # Deployment and Operations
 
-Status: accepted direction; not implemented
+Status: artifacts implemented and locally validated; no live deployment
 
 Last updated: 2026-08-24
 
@@ -24,6 +24,12 @@ scaling, and failure behavior.
 The image should be non-root, compile Vite assets at build time, contain no
 development server, write logs to stdout/stderr, serve only `public/`, expose
 `/up`, and handle graceful shutdown.
+
+The implemented image pins Server Side Up v4.5.1 and Node 22.23.2 by digest,
+enables production OPcache, preserves the base entrypoint and `/init`, and runs
+as `www-data`. It overrides the inherited container stop signal to `SIGTERM` so
+s6 shuts down promptly while retaining its per-service graceful signals; the
+inherited `SIGQUIT` timed out and required SIGKILL in local testing.
 
 ## exe.dev
 

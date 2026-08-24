@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+NODE_VERSION=22.23.2
+NODE_ARCHIVE="node-v${NODE_VERSION}-linux-x64.tar.xz"
+NODE_SHA256=d60acfe00a2932254bb0ad20e01b0d74397a0875595de719654b214f4b03f307
+COMPOSER_VERSION=2.10.2
+COMPOSER_SHA256=5ee7125f8a30a34d246cefdc0bc85b8a783b28f2aec968994118512350d28027
+
+install_system_packages() {
+    sudo install -m 0755 -d /etc/apt/keyrings
+
+    if [[ ! -f /etc/apt/keyrings/debsuryorg-archive-keyring.gpg ]]; then
+        curl -fsSL https://packages.sury.org/php/apt.gpg | sudo gpg --dearmor --yes -o /etc/apt/keyrings/debsuryorg-archive-keyring.gpg
+    fi
+
+    echo "deb [signed-by=/etc/apt/keyrings/debsuryorg-archive-keyring.gpg] https://packages.sury.org/php/ bookworm main" |
+        sudo tee /etc/apt/sources.list.d/php.list >/dev/null
+
+    if [[ ! -f /etc/apt/keyrings/postgresql.gpg ]]; then
+        curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor --yes -o /etc/apt/keyrings/postgresql.gpg
+    fi
+
+    echo "deb [signed-by=/etc/apt/keyrings/postgresql.gpg] https://apt.postgresql.org/pub/repos/apt bookworm-pgdg main" |
+        sudo tee /etc/apt/sources.list.d/postgresql.list >/dev/null
+
+    sudo apt-get update
+    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        ca-certificates curl git gnupg unzip \
+        php8.3-bcmath php8.3-cli php8.3-curl php8.3-gd php8.3-intl \
+        php8.3-mbstring php8.3-opcache php8.3-pgsql php8.3-sqlite3 \
+        php8.3-xml php8.3-zip \
+        postgresql-18 postgresql-client-18
+}
+
+install_node() {
+    if [[ "$(node --version 2>/dev/null || true)" == "v${NODE_VERSION}" ]] &&
+        [[ "$(npm --version 2>/dev/null || true)" == "10.9.8" ]]; then
+        return
+    fi
+
+    local archive
+    archive="$(mktemp)"
+    curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/${NODE_ARCHIVE}" -o "${archive}"
+    echo "${NODE_SHA256}  ${archive}" | sha256sum --check --status
+    sudo tar -xJf "${archive}" -C /usr/local --strip-components=1 --no-same-owner
+    rm -f "${archive}"
+}
+
+install_composer() {
+    if [[ "$(composer --version 2>/dev/null || true)" == "Composer version ${COMPOSER_VERSION}"* ]]; then
+        return
+    fi
+
+    local phar
+    phar="$(mktemp)"
+    curl -fsSL "https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar" -o "${phar}"
+    echo "${COMPOSER_SHA256}  ${phar}" | sha256sum --check --status
+    sudo install -m 0755 "${phar}" /usr/local/bin/composer
+    rm -f "${phar}"
+}
+
+prepare_postgres() {
+    if ! pg_lsclusters --no-header | awk '$1 == "18" && $2 == "main" { found = 1 } END { exit ! found }'; then
+        sudo pg_createcluster 18 main --start-conf=manual
+    fi
+
+    sudo pg_ctlcluster 18 main stop || true
+    amp orb service restart postgres
+
+    for _ in {1..30}; do
+        sudo -u postgres pg_isready --quiet && break
+        sleep 1
+    done
+    sudo -u postgres pg_isready --quiet
+
+    sudo -u postgres psql --set=ON_ERROR_STOP=1 <<'SQL'
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'laravel') THEN
+        CREATE ROLE laravel LOGIN CREATEDB PASSWORD 'laravel';
+    ELSE
+        ALTER ROLE laravel WITH LOGIN CREATEDB PASSWORD 'laravel';
+    END IF;
+END
+$$;
+SELECT 'CREATE DATABASE laravel_app_starter_kit OWNER laravel'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'laravel_app_starter_kit')\gexec
+SELECT 'CREATE DATABASE laravel_app_starter_kit_test OWNER laravel'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'laravel_app_starter_kit_test')\gexec
+SELECT 'CREATE DATABASE laravel_app_starter_kit_browser OWNER laravel'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'laravel_app_starter_kit_browser')\gexec
+SQL
+}
+
+install_system_packages
+install_node
+install_composer
+
+composer install --no-interaction --no-progress --prefer-dist
+npm ci
+
+if [[ ! -f .env ]]; then
+    cp .env.example .env
+fi
+
+if ! grep -Eq '^APP_KEY=.+$' .env; then
+    php artisan key:generate --ansi
+fi
+
+prepare_postgres
+php artisan migrate --force --no-interaction
+npx playwright install --with-deps chromium
+npm run build
+amp orb services ensure

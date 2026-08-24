@@ -1,6 +1,6 @@
 # Combined Roadmap
 
-Status: accepted direction
+Status: starter implementation complete; comparison slices deferred
 
 Last updated: 2026-08-24
 
@@ -31,7 +31,7 @@ Optional full Event Horizon and LX rebuilds
 - Accepted architecture, package policy, implementation plan, and scorecard
 - No Laravel application code
 
-Gate: Robert explicitly authorizes implementation.
+Completed at documentation commit `b567fa936df49e37b7d861339f5f3dbb13efc480`.
 
 ## Milestone B — Laravel foundation
 
@@ -40,7 +40,7 @@ Gate: Robert explicitly authorizes implementation.
 - Upstream authentication and frontend behavior preserved
 - Locked dependencies and documented implementation adjustments
 
-Gate: upstream starter flows and production build pass.
+Completed. Upstream starter flows and production build pass.
 
 ## Milestone C — AI-ready development
 
@@ -48,7 +48,8 @@ Gate: upstream starter flows and production build pass.
 - Deterministic orb setup/resume/services
 - PHPUnit, Larastan, Pint, frontend checks, Playwright, audits, and CI
 
-Gate: a fresh orb needs no undocumented intervention.
+Completed. Setup, resume, supervised services, CI, and aggregate checks are
+checked in and independently exercised.
 
 ## Milestone D — Production and deployments
 
@@ -58,7 +59,10 @@ Gate: a fresh orb needs no undocumented intervention.
 - exe.dev, Fly.io, and Laravel Cloud runbooks and verification
 - Backups, restore, migrations, rollback, secrets, and health
 
-Gate: one application is proven on all three target profiles.
+Artifacts complete. The image and exe.dev topology were locally exercised;
+Fly.io and Laravel Cloud configuration/runbooks were validated without creating
+external resources. Live target acceptance remains a separately authorized
+deployment activity.
 
 ## Milestone E — Package cookbook and starter release
 
@@ -67,7 +71,9 @@ Gate: one application is proven on all three target profiles.
   mechanism
 - Complete clean-environment certification
 
-Gate: Robert accepts the starter as ready for comparison slices.
+Completed. The cookbook is documentation-only and a clean independent starter
+install passes the release checks. Robert may now review readiness for the
+separate comparison slices.
 
 ## Milestone F — Personal slice
 

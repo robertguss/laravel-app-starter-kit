@@ -1,6 +1,6 @@
 # Packages and Cookbook
 
-Status: accepted package policy; cookbook not implemented
+Status: policy and cookbook implemented; optional packages remain uninstalled
 
 Last updated: 2026-08-24
 
@@ -30,20 +30,20 @@ requirement.
 
 ## Official optional packages
 
-| Capability | Package | Include when |
-|---|---|---|
-| Redis queue dashboard | Horizon | Redis queues and operational dashboard are required |
-| Performance dashboard | Pulse | Self-hosted aggregate application metrics are wanted |
-| Request/job debugging | Telescope | Local/staging event recording justifies sensitive storage |
-| Hosted Laravel observability | Nightwatch | The application selects Laravel's SaaS telemetry |
-| Realtime | Reverb + Echo | Actual WebSocket behavior exists |
-| Social identity | Socialite | An application selects OAuth login |
-| API tokens | Sanctum | An external API/mobile/decoupled client exists |
-| Search | Scout | Search indexing semantics exceed ordinary PostgreSQL/Eloquent |
-| Feature rollout | Pennant | A real rollout/experiment needs flags |
-| Billing | Cashier Stripe/Paddle | The product selects that billing provider |
-| Persistent runtime | Octane | Measurements and state-safety tests justify it |
-| S3 storage | Flysystem AWS S3 adapter | Uploads require object storage |
+| Capability                   | Package                  | Include when                                                  |
+| ---------------------------- | ------------------------ | ------------------------------------------------------------- |
+| Redis queue dashboard        | Horizon                  | Redis queues and operational dashboard are required           |
+| Performance dashboard        | Pulse                    | Self-hosted aggregate application metrics are wanted          |
+| Request/job debugging        | Telescope                | Local/staging event recording justifies sensitive storage     |
+| Hosted Laravel observability | Nightwatch               | The application selects Laravel's SaaS telemetry              |
+| Realtime                     | Reverb + Echo            | Actual WebSocket behavior exists                              |
+| Social identity              | Socialite                | An application selects OAuth login                            |
+| API tokens                   | Sanctum                  | An external API/mobile/decoupled client exists                |
+| Search                       | Scout                    | Search indexing semantics exceed ordinary PostgreSQL/Eloquent |
+| Feature rollout              | Pennant                  | A real rollout/experiment needs flags                         |
+| Billing                      | Cashier Stripe/Paddle    | The product selects that billing provider                     |
+| Persistent runtime           | Octane                   | Measurements and state-safety tests justify it                |
+| S3 storage                   | Flysystem AWS S3 adapter | Uploads require object storage                                |
 
 ## Trusted community cookbook
 
@@ -78,6 +78,8 @@ Each entry records:
 
 The cookbook is documentation, not executable remote code or a second package
 manager.
+
+The implemented catalog is [`docs/package-cookbook.md`](../package-cookbook.md).
 
 ## Anti-bloat rules
 

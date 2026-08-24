@@ -1,16 +1,18 @@
 # Laravel App Starter Kit
 
-Design repository for Robert Guss's conventional, AI-friendly Laravel
-application starter.
+Robert Guss's conventional, AI-friendly Laravel application starter.
 
-The project is currently in a **documentation-only design phase**. No Laravel
-application has been generated. Application implementation requires a separate
-explicit approval after this baseline is reviewed.
+The repository is a runnable Laravel 13 application generated from Laravel's
+official React starter. It keeps the official Fortify, Inertia, React,
+TypeScript, Wayfinder, Tailwind, and shadcn/Radix foundation visible while
+adding PostgreSQL, Laravel Boost/Amp support, complete quality checks, a
+portable production image, deployment runbooks, and an optional-package
+cookbook.
 
 ## Purpose
 
-This starter will provide a fast default foundation for personal/family apps
-and small internal tools while leaning heavily on Laravel's official starter,
+This starter provides a fast default foundation for personal/family apps and
+small internal tools while leaning heavily on Laravel's official starter,
 framework conventions, first-party packages, and trusted community ecosystem.
 
 It is also a controlled comparison with the
@@ -35,20 +37,27 @@ framework's strengths, then be compared through representative applications.
 
 ## Start here
 
-1. [Documentation index](docs/README.md)
-2. [Vision and principles](docs/vision-and-principles.md)
-3. [Product and deployment envelope](docs/product-envelope.md)
-4. [Decision register](docs/decision-register.md)
-5. [Baseline architecture](docs/architecture/baseline.md)
-6. [Implementation plan](docs/implementation-plan.md)
-7. [Roadmap](docs/roadmap.md)
-8. [Open questions](docs/open-questions.md)
+1. Copy `.env.example` to `.env` and configure a PostgreSQL database.
+2. Run `composer install`, `npm ci`, `php artisan key:generate`, and
+   `php artisan migrate`.
+3. Start normal local development with `composer run dev`.
+4. Run the complete check with `composer ci:check`.
+
+In an Amp orb, the executable `.agents/setup` installs the locked toolchain,
+prepares disposable PostgreSQL databases, installs Playwright Chromium, builds
+assets, and starts the supervised services. `.agents/resume` repairs the
+services after a pause.
+
+See the [documentation index](docs/README.md),
+[implementation record](docs/implementation-record.md), and
+[decision register](docs/decision-register.md) before changing the foundation.
 
 ## Status
 
-- Documentation baseline: captured; awaiting review
-- Laravel application: not generated
-- Implementation authorization: not yet granted
+- Implementation Phases 1–6: complete and locally certified
+- Deployment artifacts: implemented and locally validated
+- Live exe.dev, Fly.io, and Laravel Cloud deployments: not performed
+- Representative personal/internal product slices: deferred follow-up work
 - Repository visibility: private
 
 ## License

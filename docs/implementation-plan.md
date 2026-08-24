@@ -1,6 +1,6 @@
 # Laravel Starter-Kit Implementation Plan
 
-Status: accepted plan; implementation requires Robert's explicit approval
+Status: Phases 0–6 implemented and locally certified
 
 Last updated: 2026-08-24
 
@@ -9,6 +9,23 @@ Last updated: 2026-08-24
 Produce a conventional Laravel starter that can create an independent app, run
 deterministically in Amp, pass a complete verification suite, and deploy to
 exe.dev, Fly.io, or Laravel Cloud without a custom framework layer.
+
+## Completion
+
+| Phase                           | Status             | Evidence                                                                |
+| ------------------------------- | ------------------ | ----------------------------------------------------------------------- |
+| 0. Documentation baseline       | Complete           | Original 20-file baseline retained                                      |
+| 1. Official React foundation    | Complete           | Official starter integrated; PostgreSQL and locked installs pass        |
+| 2. Boost, quality, and Amp      | Complete           | Boost/Amp output, aggregate check, CI, and Playwright implemented       |
+| 3. Operations and image         | Complete           | Database services and four-role OCI topology locally exercised          |
+| 4. Deployment targets           | Artifacts complete | exe.dev locally exercised; Fly/Cloud statically validated, not deployed |
+| 5. Package cookbook             | Complete           | Curated recipes remain optional and uninstalled                         |
+| 6. Starter release verification | Complete           | Clean custom-starter install and independent full check recorded        |
+
+See the [implementation record](implementation-record.md) for exact versions,
+commands, sources, adjustments, and verification. Live platform deployment is
+not part of local implementation certification and still requires target
+authorization and credentials.
 
 ## Phase 0 — Documentation baseline
 
@@ -26,21 +43,21 @@ exe.dev, Fly.io, or Laravel Cloud without a custom framework layer.
 - No unresolved design blocker remains.
 - Robert explicitly authorizes application implementation.
 
-## Phase 1 — Official Laravel React foundation
+## Phase 1 — Official Laravel React foundation — complete
 
 1. Recheck current Laravel release/support and official starter manifests.
 2. Resolve and lock compatible PHP, Composer, Node, npm, Laravel, Inertia,
    React, Vite, Tailwind, and starter dependencies.
 3. Generate the official React starter using its supported workflow.
-4. Preserve generated Fortify auth, Wayfinder, layouts, components, scripts,
-   and tests.
+4. Preserve generated Fortify auth, Wayfinder, layouts, components, scripts, and
+   tests.
 5. Configure PostgreSQL without redesigning upstream architecture.
 6. Record exact versions, sources, and any unavoidable adjustments.
 
-Verification includes the generated auth flows, migrations, PHP/frontend
-checks, production build, and responsive browser behavior.
+Verification includes the generated auth flows, migrations, PHP/frontend checks,
+production build, and responsive browser behavior.
 
-## Phase 2 — Boost, quality, and Amp
+## Phase 2 — Boost, quality, and Amp — complete
 
 1. Install Boost development-only with its official Amp integration.
 2. Review and commit portable MCP configuration, AGENTS guidance, rules, and
@@ -52,18 +69,18 @@ checks, production build, and responsive browser behavior.
 6. Add one truthful aggregate verification command and CI from an empty
    PostgreSQL environment.
 
-## Phase 3 — Operational foundation and image
+## Phase 3 — Operational foundation and image — complete
 
 1. Validate database cache, sessions, and queues on PostgreSQL.
 2. Add independently supervised worker and singleton scheduler roles.
 3. Verify failed jobs, graceful shutdown, process reload, and scheduling.
-4. Validate framework mail/log, local filesystem, notifications, and HTTP
-   client behavior without provider dependencies.
+4. Validate framework mail/log, local filesystem, notifications, and HTTP client
+   behavior without provider dependencies.
 5. Build a multi-stage pinned Server Side Up Nginx/FPM image.
 6. Verify non-root permissions, `/up`, static assets, signal handling, and
    web/worker/scheduler/release commands from one digest.
 
-## Phase 4 — Deployment targets
+## Phase 4 — Deployment targets — artifacts complete
 
 1. Implement and restore-test exe.dev Docker Compose, persistent PostgreSQL,
    backup, migration, rollback, and upgrade documentation.
@@ -76,15 +93,20 @@ checks, production build, and responsive browser behavior.
 Deployment, remote resource creation, and production writes require separate
 approval at execution time.
 
-## Phase 5 — Package cookbook
+The checked-in artifacts and local runtime contracts are complete. The original
+criterion to prove behavior on live targets is intentionally pending because no
+exe.dev, Fly.io, Laravel Cloud, managed database, storage, domain, or mail
+resource was authorized.
 
-Write and verify selected official/community package entries. Do not install
-the catalog in the starter and do not build a custom recipe engine.
+## Phase 5 — Package cookbook — complete
+
+Write and verify selected official/community package entries. Do not install the
+catalog in the starter and do not build a custom recipe engine.
 
 Each entry must document the need threshold, package commands, configuration,
 runtime/provider coupling, tests, security, update, and removal considerations.
 
-## Phase 6 — Starter release verification
+## Phase 6 — Starter release verification — complete
 
 1. Create a fresh independent app through Laravel's current custom-starter
    workflow.
@@ -100,4 +122,5 @@ runtime/provider coupling, tests, security, update, and removal considerations.
 - Separate behavior preservation from behavior changes.
 - Do not add a package to solve a hypothetical future need.
 - Treat package/runtime contradictions as evidence to document and review.
-- Keep implementation commits phase-coherent and unpushed until reviewed.
+- Keep future implementation commits coherent and run the affected checks before
+  sharing them.

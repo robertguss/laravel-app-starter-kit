@@ -1,10 +1,14 @@
 # Documentation Index
 
-Status: accepted design direction; not implemented
+Status: implementation Phases 1–6 complete
 
 Last updated: 2026-08-24
 
 This is the durable entry point for future Amp sessions and fresh orbs.
+
+The runnable application is the source of truth for code and locked versions.
+The implementation record links the exact upstream inputs and records where
+current Laravel behavior changed a design-time assumption.
 
 ## Product and decisions
 
@@ -32,14 +36,22 @@ This is the durable entry point for future Amp sessions and fresh orbs.
 ## Execution and comparison
 
 - [Implementation plan](implementation-plan.md)
+- [Implementation and release record](implementation-record.md)
 - [Combined roadmap](roadmap.md)
 - [Rails/Laravel comparison scorecard](comparison-scorecard.md)
+- [Optional package cookbook](package-cookbook.md)
+
+## Deployments
+
+- [exe.dev](deployment/exe-dev.md)
+- [Fly.io](deployment/fly-io.md)
+- [Laravel Cloud](deployment/laravel-cloud.md)
 
 ## Status language
 
 - **Accepted direction**: Robert approved the design direction.
-- **Implementation default**: use this choice when implementation begins unless
-  current upstream evidence requires a documented adjustment.
+- **Implemented baseline**: present in the runnable starter and covered by its
+  checks.
 - **Optional cookbook entry**: not installed in the starter; documented for an
   application that needs it.
 - **Deferred**: intentionally absent until a real requirement appears.
@@ -55,5 +67,7 @@ This is the durable entry point for future Amp sessions and fresh orbs.
 - Official Laravel React starter:
   [`laravel/react-starter-kit`](https://github.com/laravel/react-starter-kit)
 
-Exact versions and package behavior must be checked from authoritative sources
-again when implementation starts.
+Exact selected versions and authoritative snapshots are in the
+[implementation record](implementation-record.md). Re-resolve compatibility
+before a future dependency upgrade; do not substitute old design guesses for the
+lockfiles.

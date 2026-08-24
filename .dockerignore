@@ -1,0 +1,17 @@
+.agents
+.amp
+.env
+.env.*
+!.env.example
+.git
+.github
+.idea
+.vscode
+docs
+node_modules
+playwright-report
+public/build
+storage/logs/*
+test-results
+tests
+vendor

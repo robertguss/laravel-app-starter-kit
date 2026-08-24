@@ -1,6 +1,6 @@
 # Testing and Quality
 
-Status: accepted direction; not implemented
+Status: implemented
 
 Last updated: 2026-08-24
 
@@ -47,7 +47,7 @@ Testing Library only when meaningful client-owned logic exists.
 
 ## Aggregate verification
 
-The eventual truthful check must include:
+`composer ci:check` includes:
 
 - Pint check;
 - Larastan;

@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -lt 1 || $# -gt 2 ]]; then
+    echo "Usage: $0 BACKUP.dump [restore_database]" >&2
+    exit 1
+fi
+
+backup="$(realpath "$1")"
+checksum="${backup}.sha256"
+target="${2:-restore_drill_$(date -u +%Y%m%dT%H%M%SZ)}"
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+deploy_dir="$(cd -- "${script_dir}/.." && pwd)"
+env_file="${deploy_dir}/.env"
+
+if [[ ! -f "${env_file}" ]]; then
+    echo "Missing ${env_file}; copy .env.example and set its secrets first." >&2
+    exit 1
+fi
+
+if [[ ! "${target}" =~ ^[a-z][a-z0-9_]{2,62}$ ]]; then
+    echo "Restore database must match ^[a-z][a-z0-9_]{2,62}$." >&2
+    exit 1
+fi
+
+if [[ ! -f "${checksum}" ]]; then
+    echo "Missing checksum ${checksum}." >&2
+    exit 1
+fi
+
+(cd "$(dirname "${backup}")" && sha256sum --check "$(basename "${checksum}")")
+
+compose=(docker compose --project-directory "${deploy_dir}" --env-file "${env_file}" -f "${deploy_dir}/compose.yaml")
+production_database="$("${compose[@]}" exec -T postgres printenv POSTGRES_DB)"
+username="$("${compose[@]}" exec -T postgres printenv POSTGRES_USER)"
+
+if [[ "${target}" == "${production_database}" ]]; then
+    echo "Refusing to overwrite the configured application database." >&2
+    exit 1
+fi
+
+"${compose[@]}" exec -T postgres dropdb --if-exists --username="${username}" "${target}"
+"${compose[@]}" exec -T postgres createdb --username="${username}" --owner="${username}" "${target}"
+"${compose[@]}" exec -T postgres \
+    pg_restore --exit-on-error --no-owner --no-privileges \
+    --username="${username}" --dbname="${target}" < "${backup}"
+"${compose[@]}" exec -T postgres \
+    psql --username="${username}" --dbname="${target}" \
+    --tuples-only --command='SELECT count(*) AS restored_migrations FROM migrations;'
+
+printf 'Restore drill passed in disposable database %s.\n' "${target}"
+printf 'After inspection, remove it with:\n  docker compose --project-directory %q --env-file %q -f %q exec -T postgres dropdb --username=%q %q\n' \
+    "${deploy_dir}" "${env_file}" "${deploy_dir}/compose.yaml" "${username}" "${target}"

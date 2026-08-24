@@ -2,21 +2,25 @@
 
 Last updated: 2026-08-24
 
-No unresolved product-architecture blocker remains. These implementation and
-deployment facts must be resolved from current evidence when their phase starts.
+No unresolved starter implementation blocker remains. Phase 1–6 research answers
+and adjustments are captured in the implementation record and decision register.
+The remaining questions require a real target or product slice and must not be
+answered by adding speculative starter code.
 
-## Implementation-time research
+## Resolved implementation research
 
-1. Exact current Laravel, PHP, Composer, Node, npm, Inertia, React, Vite,
-   Tailwind, Boost, and package versions
-2. Exact official custom-starter creation/distribution mechanism
-3. Current official starter generation choices and resulting auth/component
-   manifest
-4. Current Boost installer output for Amp, guidance, MCP tools, and skills
-5. Exact Server Side Up image variant, license, tag, digest, PHP extensions,
-   shutdown behavior, and health contract
-6. Whether upstream scripts require any minimal adjustment for PostgreSQL or
-   Amp without replacing their command vocabulary
+- Exact runtime and dependency locks: recorded in
+  [implementation-record.md](implementation-record.md) and the lockfiles.
+- Official source: Laravel 13's React/Fortify starter, standard authentication,
+  PHPUnit, npm, and PostgreSQL installer choices.
+- Starter consumption: Laravel installer's `--using` Git URL path was exercised;
+  Packagist publication remains deliberately absent.
+- Boost: development-only Amp MCP, guidelines, and six generated skill groups
+  are committed.
+- Production: pinned Server Side Up 8.3 FPM/Nginx v4.5.1; the derived image
+  overrides only the container stop signal to satisfy s6 graceful shutdown.
+- Upstream scripts: normal command vocabulary retained; aggregate checks and
+  PostgreSQL-specific setup are additive.
 
 ## exe.dev deployment
 
@@ -46,8 +50,8 @@ deployment facts must be resolved from current evidence when their phase starts.
 
 1. Exact personal slice journey and data model
 2. Exact internal provider workflow and safe fixture data
-3. Whether Saloon is compared on the same provider after the Laravel HTTP
-   client implementation
+3. Whether Saloon is compared on the same provider after the Laravel HTTP client
+   implementation
 4. Minimum evidence required before starting full Event Horizon/LX rebuilds
 
 ## Repository administration

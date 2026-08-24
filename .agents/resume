@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ -f .env ]] && [[ -d vendor ]] && [[ -d node_modules ]]; then
+    amp orb services ensure
+fi

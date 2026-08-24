@@ -1,6 +1,6 @@
 # Developer Experience, Boost, and Amp
 
-Status: accepted direction; not implemented
+Status: implemented
 
 Last updated: 2026-08-24
 
@@ -40,23 +40,27 @@ connect it to production data, or enable it in production.
 
 ## Amp files
 
-### `.agents/setup`
+### `.agents/setup` — implemented
 
 Idempotently install the selected PHP and extensions, Composer dependencies,
 Node/npm dependencies, PostgreSQL client/service requirements, and Playwright
 browser dependencies. Prepare deterministic development/test databases without
 writing real secrets.
 
-### `.agents/resume`
+### `.agents/resume` — implemented
 
 Repair a resumed orb quickly: confirm dependencies, generated Wayfinder/assets,
 database connectivity, and migrations without performing a full reinstall.
 
-### `.amp/services.yaml`
+### `.amp/services.yaml` — implemented
 
-Run the conventional development command through Amp supervision, expose the
-web service through an Amp Portal, declare readiness, and provide useful app
-and health links. Do not maintain a second hidden development topology.
+Run the conventional development command through Amp supervision, expose the web
+service through an Amp Portal, declare readiness, and provide useful app and
+health links. Do not maintain a second hidden development topology.
+
+The portal serves Laravel with the locked production asset build while
+`composer run dev` remains the normal interactive Laravel/Vite workflow. A
+separately supervised PostgreSQL 18 service keeps resumed orbs deterministic.
 
 ## Deterministic AI behavior
 

@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+deploy_dir="$(cd -- "${script_dir}/.." && pwd)"
+env_file="${deploy_dir}/.env"
+output_dir="${1:-${deploy_dir}/backups}"
+
+if [[ ! -f "${env_file}" ]]; then
+    echo "Missing ${env_file}; copy .env.example and set its secrets first." >&2
+    exit 1
+fi
+
+compose=(docker compose --project-directory "${deploy_dir}" --env-file "${env_file}" -f "${deploy_dir}/compose.yaml")
+database="$("${compose[@]}" exec -T postgres printenv POSTGRES_DB)"
+username="$("${compose[@]}" exec -T postgres printenv POSTGRES_USER)"
+timestamp="$(date -u +%Y%m%dT%H%M%SZ)"
+backup="${output_dir}/${database}-${timestamp}.dump"
+temporary="${backup}.tmp"
+
+umask 077
+mkdir -p "${output_dir}"
+trap 'rm -f "${temporary}"' EXIT
+
+"${compose[@]}" exec -T postgres \
+    pg_dump --format=custom --no-owner --no-privileges \
+    --username="${username}" --dbname="${database}" > "${temporary}"
+
+test -s "${temporary}"
+mv "${temporary}" "${backup}"
+sha256sum "${backup}" > "${backup}.sha256"
+
+printf 'Created %s and %s\n' "${backup}" "${backup}.sha256"
